@@ -30,5 +30,4 @@ jobs:
         pre-commit install
     - name: Run unit tests
       run: |
-        python -m unittest discover
-        pytest all
+        pytest test/*.py
