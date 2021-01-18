@@ -10,8 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,4 +36,13 @@ jobs:
         npm run mb_restart -- --host 127.0.0.1 --localOnly true --ipWhitelist 127.0.0.1 --allowInjection --configfile testapi/apis.ejs &
     - name: Run tests
       run: |
-        python -m robot -P src --xunit xunit.xml atest
+        python -m robot -P src --xunit xunit.xml -d results atest
+    - name: Generate Report
+      id: xunit-viewer
+      uses: AutoModality/action-xunit-viewer@v1
+      with:
+          results: results
+    - name: Attach the report
+      uses: actions/upload-artifact@v1
+      with:
+        path: results
