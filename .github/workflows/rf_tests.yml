@@ -43,7 +43,8 @@ jobs:
       with:
           results: results
     - name: Attach the report
+      if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: xunit-results
-        path: results
+        name: ${{ steps.xunit-viewer.outputs.report-name }}
+        path: ${{ steps.xunit-viewer.outputs.report-dir }}
