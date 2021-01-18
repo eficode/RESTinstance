@@ -45,4 +45,5 @@ jobs:
     - name: Attach the report
       uses: actions/upload-artifact@v1
       with:
+        name: xunit-results
         path: results
