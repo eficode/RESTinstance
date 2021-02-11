@@ -578,7 +578,6 @@ class Keywords(object):
 
         ``headers``: Headers as a JSON object to add or override for the request.
 
-
         *Examples*
 
         | `DELETE` | /users/6 |
