@@ -479,7 +479,7 @@ class Keywords(object):
 
         ``headers``: Headers as a JSON object to add or override for the request.
 
-        `data``: Data as a dictionary, bytes or a file-like object
+        ``data``: Data as a dictionary, bytes or a file-like object
 
         *Examples*
 
@@ -533,7 +533,7 @@ class Keywords(object):
 
         ``headers``: Headers as a JSON object to add or override for the request.
 
-        `data``: Data as a dictionary, bytes or a file-like object
+        ``data``: Data as a dictionary, bytes or a file-like object
 
         *Examples*
 
