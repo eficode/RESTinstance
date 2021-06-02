@@ -83,11 +83,11 @@ class Keywords(object):
     def set_client_authentication(self, auth_type, user=None, password=None):
         """*Attaches HTTP basic authentication to the given requests.*
 
-        The API by default will not have authentication enabled. 
+        The API by default will not have authentication enabled.
 
         The auth_type argument must be ${NONE}, basic, digest or proxy.
-        In case the user sets the auth_type to ${NONE} the authentication 
-        information 
+        In case the user sets the auth_type to ${NONE} the authentication
+        information
         The user and password will be written in plain text.
 
         *Examples*
@@ -1252,9 +1252,10 @@ class Keywords(object):
                 except IndexError:
                     raise RuntimeError(no_instances_error)
             elif what.startswith("schema"):
-                logger.warn(
+                logger.write(
                     "Using `Output` for schema is deprecated. "
-                    + "Using `Output Schema` to handle schema paths better."
+                    + "Using `Output Schema` to handle schema paths better.",
+                    self.log_level
                 )
                 what = what.lstrip("schema").lstrip()
                 return self.output_schema(what, file_path, append, sort_keys)
@@ -1430,9 +1431,10 @@ class Keywords(object):
         except ValueError:
             response_body = response.text
             if response_body:
-                logger.warn(
+                logger.write(
                     "Response body content is not JSON. "
-                    + "Content-Type is: %s" % response.headers["Content-Type"]
+                    + "Content-Type is: %s" % response.headers["Content-Type"],
+                    self.log_level
                 )
         response = {
             "seconds": response.elapsed.microseconds / 1000 / 1000,
