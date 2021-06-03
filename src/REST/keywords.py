@@ -290,6 +290,7 @@ class Keywords(object):
         allow_redirects=None,
         validate=True,
         headers=None,
+        loglevel=None,
     ):
         """*Sends a HEAD request to the endpoint.*
 
@@ -324,7 +325,7 @@ class Keywords(object):
         validate = self._input_boolean(validate)
         if headers:
             request["headers"].update(self._input_object(headers))
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="OPTIONS", tags=("http",))
     def options(
@@ -334,6 +335,7 @@ class Keywords(object):
         allow_redirects=None,
         validate=True,
         headers=None,
+        loglevel=None,
     ):
         """*Sends an OPTIONS request to the endpoint.*
 
@@ -367,7 +369,7 @@ class Keywords(object):
         validate = self._input_boolean(validate)
         if headers:
             request["headers"].update(self._input_object(headers))
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="GET", tags=("http",))
     def get(
@@ -379,6 +381,7 @@ class Keywords(object):
         validate=True,
         headers=None,
         data=None,
+        loglevel=None,
     ):
         """*Sends a GET request to the endpoint.*
 
@@ -432,7 +435,7 @@ class Keywords(object):
             request["headers"].update(self._input_object(headers))
         if data:
             request["data"] = self._input_data(data)
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="POST", tags=("http",))
     def post(
@@ -444,6 +447,7 @@ class Keywords(object):
         validate=True,
         headers=None,
         data=None,
+        loglevel=None,
     ):
         """*Sends a POST request to the endpoint.*
 
@@ -486,7 +490,7 @@ class Keywords(object):
             request["headers"].update(self._input_object(headers))
         if data:
             request["data"] = self._input_data(data)
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="PUT", tags=("http",))
     def put(
@@ -498,6 +502,7 @@ class Keywords(object):
         validate=True,
         headers=None,
         data=None,
+        loglevel=None,
     ):
         """*Sends a PUT request to the endpoint.*
 
@@ -540,7 +545,7 @@ class Keywords(object):
             request["headers"].update(self._input_object(headers))
         if data:
             request["data"] = self._input_data(data)
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="PATCH", tags=("http",))
     def patch(
@@ -552,6 +557,7 @@ class Keywords(object):
         validate=True,
         headers=None,
         data=None,
+        loglevel=None,
     ):
         """*Sends a PATCH request to the endpoint.*
 
@@ -594,7 +600,7 @@ class Keywords(object):
             request["headers"].update(self._input_object(headers))
         if data:
             request["data"] = self._input_data(data)
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="DELETE", tags=("http",))
     def delete(
@@ -605,6 +611,7 @@ class Keywords(object):
         allow_redirects=None,
         validate=True,
         headers=None,
+        loglevel=None
     ):
         """*Sends a DELETE request to the endpoint.*
 
@@ -645,7 +652,7 @@ class Keywords(object):
         validate = self._input_boolean(validate)
         if headers:
             request["headers"].update(self._input_object(headers))
-        return self._request(endpoint, request, validate)["response"]
+        return self._request(endpoint, request, validate, loglevel)["response"]
 
     @keyword(name="Missing", tags=("assertions",))
     def missing(self, field):
@@ -1252,10 +1259,9 @@ class Keywords(object):
                 except IndexError:
                     raise RuntimeError(no_instances_error)
             elif what.startswith("schema"):
-                logger.write(
+                logger.warn(
                     "Using `Output` for schema is deprecated. "
-                    + "Using `Output Schema` to handle schema paths better.",
-                    self.log_level
+                    + "Using `Output Schema` to handle schema paths better."
                 )
                 what = what.lstrip("schema").lstrip()
                 return self.output_schema(what, file_path, append, sort_keys)
@@ -1364,6 +1370,21 @@ class Keywords(object):
         self.request["sslVerify"] = self._input_ssl_verify(ssl_verify)
         return self.request["sslVerify"]
 
+    @keyword(name="Set Log Level", tags=("settings",))
+    def set_log_level(self, loglevel):
+        """*Sets the library log level to se specific value*
+
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
+
+        *Examples*
+        | `Set Log Level` | DEBUG | |
+        | `Set Log Level` | debug | # Same as above |
+        | `Set Log Level` | NOTHING | # Will be converted to WARN|
+        """
+        self.log_level = self._set_log_level(loglevel)
+        return self.log_level
+
 
     ### Internal methods
 
@@ -1374,7 +1395,7 @@ class Keywords(object):
             self.request["auth"] = auth_type(user, password)
         return self.request["auth"]
 
-    def _request(self, endpoint, request, validate=True):
+    def _request(self, endpoint, request, validate=True, log_level=None):
         if not endpoint.startswith(("http://", "https://")):
             base_url = self.request["scheme"] + "://" + self.request["netloc"]
             if not endpoint.startswith("/"):
@@ -1421,20 +1442,22 @@ class Keywords(object):
             logger.info("Cannot infer local timestamp! tzlocal:%s" % str(e))
         if validate and self.spec:
             self._assert_spec(self.spec, response)
-        instance = self._instantiate(request, response, validate)
+        instance = self._instantiate(request, response, validate, log_level)
         self.instances.append(instance)
         return instance
 
-    def _instantiate(self, request, response, validate_schema=True):
+    def _instantiate(self, request, response, validate_schema=True, log_level=None):
         try:
             response_body = response.json()
         except ValueError:
             response_body = response.text
             if response_body:
+                if not log_level:
+                    log_level = self.log_level
                 logger.write(
                     "Response body content is not JSON. "
                     + "Content-Type is: %s" % response.headers["Content-Type"],
-                    self.log_level
+                    log_level
                 )
         response = {
             "seconds": response.elapsed.microseconds / 1000 / 1000,
