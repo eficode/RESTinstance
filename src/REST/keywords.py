@@ -310,6 +310,9 @@ class Keywords(object):
 
         ``headers``: The headers to add or override for this request.
 
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
+
         *Examples*
 
         | `HEAD` | /users/1 |
@@ -353,6 +356,9 @@ class Keywords(object):
         by expectation keywords and a spec given on library init.
 
         ``headers``: Headers as a JSON object to add or override for the request.
+
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
 
         *Examples*
 
@@ -404,6 +410,9 @@ class Keywords(object):
         ``headers``: Headers as a JSON object to add or override for the request.
 
         ``data``: Data as a dictionary, bytes or a file-like object
+
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
 
         *Examples*
 
@@ -470,6 +479,9 @@ class Keywords(object):
 
         ``data``: Data as a dictionary, bytes or a file-like object
 
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
+
         *Examples*
 
         | `POST` | /users | { "id": 11, "name": "Gil Alexander" } |
@@ -524,6 +536,9 @@ class Keywords(object):
         ``headers``: Headers as a JSON object to add or override for the request.
 
         ``data``: Data as a dictionary, bytes or a file-like object
+
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
 
         *Examples*
 
@@ -580,6 +595,9 @@ class Keywords(object):
 
         ``data``: Data as a dictionary, bytes or a file-like object
 
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
+
         *Examples*
 
         | `PATCH` | /users/4 | { "name": "Clementine Bauch" } |
@@ -632,6 +650,8 @@ class Keywords(object):
 
         ``headers``: Headers as a JSON object to add or override for the request.
 
+        ``loglevel``: INFO, DEBUG, TRACE, WARN, ERROR, HTML. Other values are
+        automatically converted to WARN (library default).
 
         *Examples*
 
