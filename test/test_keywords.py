@@ -11,9 +11,9 @@ class TestKeywords(unittest.TestCase):
     def test_set_ssl_verify(self):
         self.assertTrue(self.library.request["sslVerify"])
         self.library.set_ssl_verify(False)
-        self.asserFalse(self.library.request["sslVerify"])
+        self.assertFalse(self.library.request["sslVerify"])
 
-    def test_log_levels(self):
+    def test_set_log_level(self):
         self.assertEqual(self.library.log_level, "WARN")
         self.library.set_log_level("INFO")
         self.assertEqual(self.library.log_level, "INFO")
