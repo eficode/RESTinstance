@@ -4,6 +4,7 @@ docutils
 flex
 GenSON
 jsonpath-ng
+openapi-core
 pygments
 requests
 
